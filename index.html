@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TinyGenie — Teach it your tongue</title>
+<meta name="description" content="TinyGenie is a small language model trained from scratch. Help it learn how people actually talk by submitting slang, Singlish, and code-switched text.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:        #0A0D12;
+    --ink-raised: #12161F;
+    --ink-panel:  #181E2B;
+    --line:       #232A3A;
+    --amber:      #FFB627;
+    --amber-dim:  #8A6A22;
+    --magenta:    #FF3D8A;
+    --text:       #EDEFF4;
+    --text-muted: #8893A8;
+    --text-faint: #545E72;
+
+    --display: 'Syne', sans-serif;
+    --body:    'Nunito Sans', sans-serif;
+    --mono:    'JetBrains Mono', monospace;
+
+    --max: 920px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a{ color: inherit; }
+  ::selection{ background: var(--magenta); color: var(--ink); }
+
+  :focus-visible{
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+  }
+
+  .wrap{
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(10,13,18,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner{
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wordmark{
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 19px;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+  .wordmark .dot{ color: var(--amber); }
+  .nav-cta{
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--amber);
+    padding: 9px 16px;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .nav-cta:hover{ transform: translateY(-1px); box-shadow: 0 4px 18px rgba(255,182,39,0.25); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding: 72px 0 48px;
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin: 0 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before{
+    content: "";
+    width: 8px; height: 8px;
+    background: var(--magenta);
+    border-radius: 50%;
+    display: inline-block;
+    animation: blink 2.2s ease-in-out infinite;
+  }
+  @keyframes blink{ 0%,100%{ opacity: 1; } 50%{ opacity: 0.25; } }
+
+  h1{
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(34px, 6vw, 60px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    margin: 0 0 22px;
+  }
+  h1 em{
+    font-style: normal;
+    color: var(--amber);
+  }
+  .lede{
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 58ch;
+    margin: 0 0 8px;
+  }
+
+  /* ---------- DEMO PANEL ---------- */
+  .demo{
+    margin-top: 40px;
+    background: var(--ink-panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .demo-bar{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .demo-bar .led{ width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  .demo-bar .led:nth-child(1){ background: #FF5F57; }
+  .demo-bar .led:nth-child(2){ background: #FEBC2E; }
+  .demo-bar .led:nth-child(3){ background: #28C840; }
+  .demo-bar .path{ margin-left: 10px; opacity: 0.8; }
+
+  .demo-body{ padding: 22px; }
+
+  .demo-input-row{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  #phrase-input{
+    flex: 1 1 260px;
+    background: var(--ink-raised);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+  }
+  #phrase-input::placeholder{ color: var(--text-faint); }
+  #run-btn{
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--magenta);
+    border: none;
+    padding: 0 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  #run-btn:hover{ transform: translateY(-1px); box-shadow: 0 4px 18px rgba(255,61,138,0.3); }
+
+  .demo-output{
+    margin-top: 20px;
+    min-height: 52px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .chip{
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: chip-in .35s ease forwards;
+  }
+  .chip.known{
+    background: rgba(136,147,168,0.12);
+    color: var(--text-muted);
+    border: 1px solid var(--line);
+  }
+  .chip.broken{
+    background: rgba(255,61,138,0.1);
+    color: var(--amber);
+    border: 1px solid rgba(255,182,39,0.35);
+  }
+  @keyframes chip-in{ to{ opacity: 1; transform: translateY(0); } }
+
+  .demo-readout{
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .demo-readout strong{ color: var(--amber); font-family: var(--mono); font-weight: 600; }
+
+  /* ---------- SECTIONS ---------- */
+  section{ padding: 64px 0; border-top: 1px solid var(--line); }
+  .section-head{ margin-bottom: 28px; }
+  .kicker{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--magenta);
+    margin: 0 0 10px;
+  }
+  h2{
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(24px, 3.6vw, 34px);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .body-text{ color: var(--text-muted); max-width: 64ch; font-size: 15.5px; }
+
+  .spec-strip{
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .spec{
+    flex: 1 1 140px;
+    padding: 16px 18px;
+    border-right: 1px solid var(--line);
+  }
+  .spec:last-child{ border-right: none; }
+  .spec .v{ font-family: var(--mono); font-size: 15px; color: var(--amber); font-weight: 600; }
+  .spec .k{ font-family: var(--mono); font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+
+  /* compare columns */
+  .compare{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 28px;
+  }
+  @media (max-width: 640px){ .compare{ grid-template-columns: 1fr; } }
+  .compare-col{
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+    background: var(--ink-raised);
+  }
+  .compare-col h3{
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 14px;
+    color: var(--text-faint);
+  }
+  .compare-col.has ul li::before{ content: "✓ "; color: var(--text-faint); }
+  .compare-col.missing{ border-color: rgba(255,182,39,0.35); }
+  .compare-col.missing h3{ color: var(--amber); }
+  .compare-col.missing ul li::before{ content: "— "; color: var(--amber); }
+  .compare-col ul{ margin: 0; padding: 0; list-style: none; }
+  .compare-col li{ font-size: 14.5px; color: var(--text-muted); margin-bottom: 9px; }
+
+  .callout{
+    margin-top: 24px;
+    font-size: 15px;
+    color: var(--text);
+    border-left: 2px solid var(--magenta);
+    padding-left: 16px;
+  }
+  .callout strong{ color: var(--magenta); }
+
+  /* what to send */
+  .rules{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 28px;
+  }
+  @media (max-width: 640px){ .rules{ grid-template-columns: 1fr; } }
+  .rule-card{ border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .rule-card h3{ font-family: var(--mono); font-size: 13px; margin: 0 0 14px; }
+  .rule-card.do h3{ color: var(--amber); }
+  .rule-card.dont h3{ color: var(--text-faint); }
+  .rule-card ul{ margin: 0; padding-left: 18px; color: var(--text-muted); font-size: 14.5px; }
+  .rule-card li{ margin-bottom: 8px; }
+
+  .example-block{
+    margin-top: 24px;
+    background: var(--ink-panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    color: var(--text-muted);
+    overflow-x: auto;
+  }
+  .example-block .ln{ display: flex; gap: 14px; padding: 3px 0; white-space: pre; }
+  .example-block .ln .no{ color: var(--text-faint); user-select: none; min-width: 16px; }
+  .example-block .ln .tx{ color: var(--text); }
+
+  /* CTA band */
+  .cta-band{
+    text-align: center;
+    padding: 72px 24px;
+    border-top: 1px solid var(--line);
+  }
+  .cta-band h2{ margin-bottom: 14px; }
+  .cta-band p{ color: var(--text-muted); max-width: 50ch; margin: 0 auto 30px; }
+  .cta-big{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--amber);
+    padding: 16px 30px;
+    border-radius: 999px;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .cta-big:hover{ transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,182,39,0.3); }
+  .cta-note{
+    margin-top: 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+
+  /* footer */
+  footer{
+    border-top: 1px solid var(--line);
+    padding: 32px 24px 40px;
+  }
+  .footer-inner{
+    max-width: var(--max);
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-left{ font-family: var(--mono); font-size: 12px; color: var(--text-faint); }
+  .footer-right{ font-family: var(--mono); font-size: 12px; color: var(--text-faint); text-align: right; }
+  .footer-right a{ color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="wordmark">TinyGenie<span class="dot">.</span></a>
+    <!-- TODO: replace with your real Google Form link (also appears in the CTA band below) -->
+    <a class="nav-cta" href="https://docs.google.com/forms/d/e/1FAIpQLSd0yVWl_RcFhxipP-QqCZVVhPbrMBUUb3A0nLfbvth23i6S8w/viewform?usp=publish-editor" target="_blank" rel="noopener">Submit text</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ===== HERO ===== -->
+  <section class="hero wrap" style="border-top:none;">
+    <p class="eyebrow">Trained from scratch · 4GB laptop GPU · zero scraped social data</p>
+    <h1>Your slang isn't<br>in the training data<em>.</em></h1>
+    <p class="lede">TinyGenie is a small language model being built line-by-line on a laptop GPU — English, Chinese, and everything that happens when people mix the two. Right now it only knows what it's been fed, and most of that is formal text off the open web. Type something below and watch it choke on it.</p>
+
+    <div class="demo">
+      <div class="demo-bar">
+        <span class="led"></span><span class="led"></span><span class="led"></span>
+        <span class="path">tinygenie / tokenizer.encode()</span>
+      </div>
+      <div class="demo-body">
+        <div class="demo-input-row">
+          <input id="phrase-input" type="text" maxlength="80" placeholder="walao eh today damn jialat" aria-label="Type a phrase to tokenize">
+          <button id="run-btn" type="button">Run it through the tokenizer</button>
+        </div>
+        <div class="demo-output" id="demo-output" aria-live="polite"></div>
+        <p class="demo-readout" id="demo-readout"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHAT THIS IS ===== -->
+  <section class="wrap">
+    <div class="section-head">
+      <p class="kicker">What this is</p>
+      <h2>A genie built from nothing</h2>
+    </div>
+    <p class="body-text">No pretrained weights, no fine-tune on someone else's foundation model. TinyGenie is a GPT-style transformer trained from byte one — its own tokenizer, its own weights, all of it built and trained from scratch on a single laptop GPU. It's currently learning English and Chinese together, plus whatever the people reading this decide to teach it.</p>
+
+    <div class="spec-strip">
+      <div class="spec"><div class="v">~25M</div><div class="k">Parameters</div></div>
+      <div class="spec"><div class="v">EN + ZH-Hans</div><div class="k">Base corpus</div></div>
+      <div class="spec"><div class="v">4GB</div><div class="k">VRAM, one laptop</div></div>
+      <div class="spec"><div class="v">Solo build</div><div class="k">No team, no funding</div></div>
+    </div>
+  </section>
+
+  <!-- ===== WHY YOUR TEXT MATTERS ===== -->
+  <section class="wrap">
+    <div class="section-head">
+      <p class="kicker">Why it matters</p>
+      <h2>The internet's "average" text isn't how anyone actually talks</h2>
+    </div>
+    <p class="body-text">The base training corpus comes from large web scrapes — mostly news, reference writing, and formal prose in both languages. That gets a model fluent in textbook English and textbook Chinese. It does nothing for the way real conversations actually sound.</p>
+
+    <div class="compare">
+      <div class="compare-col has">
+        <h3>Already in the corpus</h3>
+        <ul>
+          <li>News and reference writing</li>
+          <li>Formal English prose</li>
+          <li>Standard written Chinese</li>
+          <li>Textbook grammar, textbook tone</li>
+        </ul>
+      </div>
+      <div class="compare-col missing">
+        <h3>Missing entirely</h3>
+        <ul>
+          <li>Singlish</li>
+          <li>Code-switching mid-sentence</li>
+          <li>Internet slang, in either language</li>
+          <li>How people actually type to each other</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="callout">Submitted text gets folded into the corpus and <strong>oversampled 20×</strong> against everything else. A few hundred real lines from you outweighs entire scraped paragraphs of formal text.</p>
+  </section>
+
+  <!-- ===== WHAT TO SEND ===== -->
+  <section class="wrap">
+    <div class="section-head">
+      <p class="kicker">What to send</p>
+      <h2>Plain text. The messier, the better.</h2>
+    </div>
+
+    <div class="rules">
+      <div class="rule-card do">
+        <h3>DO</h3>
+        <ul>
+          <li>One phrase or sentence per line</li>
+          <li>Mix languages freely — Singlish, Mandarin, English, whatever</li>
+          <li>Write it the way you'd actually type it</li>
+          <li>A few hundred lines is already enough to be noticeable</li>
+        </ul>
+      </div>
+      <div class="rule-card dont">
+        <h3>DON'T</h3>
+        <ul>
+          <li>Copyrighted text — song lyrics, book or article excerpts</li>
+          <li>Someone else's private messages without their OK</li>
+          <li>Anything you wouldn't want a small AI repeating to a stranger</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="example-block">
+      <div class="ln"><span class="no">1</span><span class="tx">你好 I am here to 睡觉</span></div>
+      <div class="ln"><span class="no">2</span><span class="tx">walao eh today damn jialat</span></div>
+      <div class="ln"><span class="no">3</span><span class="tx">吃饱了吗 wanna go makan?</span></div>
+      <div class="ln"><span class="no">4</span><span class="tx">that test was siao difficult lah</span></div>
+      <div class="ln"><span class="no">5</span><span class="tx">他很 chill one, no need worry</span></div>
+      <div class="ln"><span class="no">6</span><span class="tx">can or not, confirm plus chop</span></div>
+      <div class="ln"><span class="no">7</span><span class="tx">今天很 shiok, weather so good</span></div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta-band" id="submit">
+    <h2>Got a few hundred lines in you?</h2>
+    <p>Drop your text into the form below. It gets merged in with everyone else's, oversampled, and trained on the next run.</p>
+    <!-- TODO: replace with your real Google Form link -->
+    <a class="cta-big" href="https://docs.google.com/forms/d/e/1FAIpQLSd0yVWl_RcFhxipP-QqCZVVhPbrMBUUb3A0nLfbvth23i6S8w/viewform?usp=publish-editor" target="_blank" rel="noopener">Submit text →</a>
+    <p class="cta-note">Takes about two minutes. No account needed.</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">TinyGenie — a from-scratch language model</div>
+    <div class="footer-right">Licensed under the <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GNU&nbsp;General&nbsp;Public&nbsp;License&nbsp;v3.0</a></div>
+  </div>
+</footer>
+
+<script>
+  const KNOWN = new Set([
+    'i','am','here','to','you','today','is','was','the','test','that','no','need',
+    'go','can','or','not','plus','so','good','it','a','an','and','very','will',
+    'this','that','wanna','want','of','for','on','in','my','your','we','they'
+  ]);
+
+  function tokenize(text){
+    const words = text.trim().split(/\s+/).filter(Boolean);
+    const tokens = [];
+    for (const w of words){
+      const clean = w.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+      const isPlainEnglish = /^[a-zA-Z]+$/.test(w);
+      if (isPlainEnglish && KNOWN.has(clean)){
+        tokens.push({ text: w, known: true });
+        continue;
+      }
+      // simulate a tokenizer fragmenting an unseen surface form into pieces
+      let i = 0;
+      while (i < w.length){
+        const len = Math.min(w.length - i, 1 + Math.floor(Math.random() * 2));
+        tokens.push({ text: w.slice(i, i + len), known: false });
+        i += len;
+      }
+    }
+    return tokens;
+  }
+
+  function render(text){
+    const out = document.getElementById('demo-output');
+    const readout = document.getElementById('demo-readout');
+    out.innerHTML = '';
+    const tokens = tokenize(text);
+
+    tokens.forEach((t, idx) => {
+      const chip = document.createElement('span');
+      chip.className = 'chip ' + (t.known ? 'known' : 'broken');
+      chip.textContent = t.text;
+      chip.style.animationDelay = (idx * 35) + 'ms';
+      out.appendChild(chip);
+    });
+
+    const brokenCount = tokens.filter(t => !t.known).length;
+    if (tokens.length === 0){
+      readout.innerHTML = '';
+      return;
+    }
+    readout.innerHTML = `<strong>${brokenCount} of ${tokens.length}</strong> fragments came back as noise the model has never seen cleanly. That gap is exactly what submitted text closes.`;
+  }
+
+  const input = document.getElementById('phrase-input');
+  const btn = document.getElementById('run-btn');
+
+  btn.addEventListener('click', () => {
+    const v = input.value.trim();
+    if (v) render(v);
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter'){ e.preventDefault(); btn.click(); }
+  });
+
+  // run once on load with a seeded example so the page makes its point immediately
+  window.addEventListener('DOMContentLoaded', () => {
+    const seed = 'walao eh today damn jialat';
+    input.value = '';
+    input.placeholder = seed;
+    render(seed);
+  });
+</script>
+
+</body>
+</html>
