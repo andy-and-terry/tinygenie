@@ -1,1 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TinyGenie — Teach it your tongue</title>
+<meta name="description" content="TinyGenie is a small language model trained from scratch. Help it learn how people actually talk by submitting slang, Singlish, and code-switched text.">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:        #0A0D12;
+    --ink-raised: #12161F;
+    --ink-panel:  #181E2B;
+    --line:       #232A3A;
+    --amber:      #FFB627;
+    --amber-dim:  #8A6A22;
+    --magenta:    #FF3D8A;
+    --text:       #EDEFF4;
+    --text-muted: #8893A8;
+    --text-faint: #545E72;
+
+    --display: 'Syne', sans-serif;
+    --body:    'Nunito Sans', sans-serif;
+    --mono:    'JetBrains Mono', monospace;
+
+    --max: 920px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a{ color: inherit; }
+  ::selection{ background: var(--magenta); color: var(--ink); }
+
+  :focus-visible{
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+  }
+
+  .wrap{
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(10,13,18,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner{
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wordmark{
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 19px;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+  .wordmark .dot{ color: var(--amber); }
+  .nav-cta{
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--ink);
+    background: var(--amber);
+    padding: 9px 16px;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .nav-cta:hover{ transform: translateY(-1px); box-shadow: 0 4px 18px rgba(255,182,39,0.25); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding: 72px 0 48px;
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin: 0 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before{
+    content: "";
+    width: 8px; height: 8px;
+    background: var(--magenta);
+    border-radius: 50%;
+    display: inline-block;
+    animation: blink 2.2s ease-in-out infinite;
+  }
+  @keyframes blink{ 0%,100%{ opacity: 1; } 50%{ opacity: 0.25; } }
+
+  h1{
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(34px, 6vw, 60px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    margin: 0 0 22px;
+  }
+  h1 em{
+    font-style: normal;
+    color: var(--amber);
+  }
+  .lede{
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 58ch;
+    margin: 0 0 8px;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{ padding: 64px 0; border-top: 1px solid var(--line); }
+  .section-head{ margin-bottom: 28px; }
+  h2{
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(24px, 3.6vw, 34px);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .body-text{ color: var(--text-muted); max-width: 64ch; font-size: 15.5px; }
+
+  .spec-strip{
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .spec{
+    flex: 1 1 140px;
+    padding: 16px 18px;
+    border-right: 1px solid var(--line);
+  }
+  .spec:last-child{ border-right: none; }
+  .spec .v{ font-family: var(--mono); font-size: 15px; color: var(--amber); font-weight: 600; }
+  .spec .k{ font-family: var(--mono); font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+
+  .callout{
+    margin-top: 24px;
+    font-size: 15px;
+    color: var(--text);
+    border-left: 2px solid var(--magenta);
+    padding-left: 16px;
+  }
+  .callout strong{ color: var(--magenta); }
+
+  /* footer */
+  footer{
+    border-top: 1px solid var(--line);
+    padding: 32px 24px 40px;
+  }
+  .footer-inner{
+    max-width: var(--max);
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-left{ font-family: var(--mono); font-size: 12px; color: var(--text-faint); }
+  .footer-right{ font-family: var(--mono); font-size: 12px; color: var(--text-faint); text-align: right; }
+  .footer-right a{ color: var(--text-muted); text-decoration: underline; text-underline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="wordmark">TinyGenie<span class="dot">.</span></a>
+    <!-- TODO: replace with your real Google Form link (also appears in the CTA band below) -->
+    <a class="nav-cta" href="https://docs.google.com/forms/d/e/1FAIpQLSd0yVWl_RcFhxipP-QqCZVVhPbrMBUUb3A0nLfbvth23i6S8w/viewform?usp=publish-editor" target="_blank" rel="noopener">Submit text</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ===== HERO ===== -->
+  <section class="hero wrap" style="border-top:none;">
+    <p class="eyebrow">Trained from scratch · 4GB laptop GPU · zero scraped social data</p>
+    <h1>Your slang isn't<br>in the training data<em>.</em></h1>
+    <p class="lede">TinyGenie is a small language model being built line-by-line on a laptop GPU — English, Chinese, and everything that happens when people mix the two. Right now it only knows what it's been fed, and most of that is formal text off the open web. Type something below and watch it choke on it.</p>
+
+    <div class="demo">
+      <div class="demo-bar">
+        <span class="led"></span><span class="led"></span><span class="led"></span>
+        <span class="path">tinygenie / tokenizer.encode()</span>
+      </div>
+      <div class="demo-body">
+        <div class="demo-input-row">
+          <input id="phrase-input" type="text" maxlength="80" placeholder="walao eh today damn jialat" aria-label="Type a phrase to tokenize">
+          <button id="run-btn" type="button">Run it through the tokenizer</button>
+        </div>
+        <div class="demo-output" id="demo-output" aria-live="polite"></div>
+        <p class="demo-readout" id="demo-readout"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHAT THIS IS ===== -->
+  <section class="wrap">
+    <div class="section-head">
+      <p class="kicker">What this is</p>
+      <h2>A genie built from nothing</h2>
+    </div>
+    <p class="body-text">No pretrained weights, no fine-tune on someone else's foundation model. TinyGenie is a GPT-style transformer trained from byte one — its own tokenizer, its own weights, all of it built and trained from scratch on a single laptop GPU. It's currently learning English and Chinese together, plus whatever the people reading this decide to teach it.</p>
+
+    <div class="spec-strip">
+      <div class="spec"><div class="v">~25M</div><div class="k">Parameters</div></div>
+      <div class="spec"><div class="v">EN + ZH-Hans</div><div class="k">Base corpus</div></div>
+      <div class="spec"><div class="v">4GB</div><div class="k">VRAM, one laptop</div></div>
+      <div class="spec"><div class="v">Solo build</div><div class="k">No team, no funding</div></div>
+    </div>
+  </section>
+
+  <!-- ===== WHY YOUR TEXT MATTERS ===== -->
+  <section class="wrap">
+    <div class="section-head">
+      <p class="kicker">Why it matters</p>
+      <h2>The internet's "average" text isn't how anyone actually talks</h2>
+    </div>
+    <p class="body-text">The base training corpus comes from large web scrapes — mostly news, reference writing, and formal prose in both languages. That gets a model fluent in textbook English and textbook Chinese. It does nothing for the way real conversations actually sound.</p>
+
+    <p class="callout">Submitted text gets folded into the corpus and <strong>oversampled 20×</strong> against everything else. A few hundred real lines from you outweighs entire scraped paragraphs of formal text.</p>
+  </section>
+
+  <!-- ===== WHAT TO SEND ===== -->
+  <section class="wrap">
+    <div class="section-head">
+      <p class="kicker">What to send</p>
+      <h2>Plain text. The messier, the better.</h2>
+    </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">TinyGenie — a from-scratch language model</div>
+    <div class="footer-right">MIT License | <a href="../">Mainpage</a></div>
+  </div>
+</footer>
+</body>
+</html>
