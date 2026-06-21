@@ -1,0 +1,9 @@
+#card {
+  width: 280px;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  color: #fff;
+  font-family: 'Nunito Sans', sans-serif;
+}
