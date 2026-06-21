@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/card.css">
 </head>
 <body>
 
@@ -26,120 +27,47 @@
   <!-- ===== HERO ===== -->
   <section class="hero wrap" style="border-top:none;">
     <p class="eyebrow">Trained from scratch · 4GB laptop GPU · zero scraped social data</p>
-    <h1>Your slang isn't<br>in the training data<em>.</em></h1>
     <p class="lede">TinyGenie is a small language model being built line-by-line on a laptop GPU — English, Chinese, and everything that happens when people mix the two. Right now it only knows what it's been fed, and most of that is formal text off the open web. Type something below and watch it choke on it.</p>
-
-    <div class="demo">
-      <div class="demo-bar">
-        <span class="led"></span><span class="led"></span><span class="led"></span>
-        <span class="path">tinygenie / tokenizer.encode()</span>
-      </div>
-      <div class="demo-body">
-        <div class="demo-input-row">
-          <input id="phrase-input" type="text" maxlength="80" placeholder="walao eh today damn jialat" aria-label="Type a phrase to tokenize">
-          <button id="run-btn" type="button">Run it through the tokenizer</button>
-        </div>
-        <div class="demo-output" id="demo-output" aria-live="polite"></div>
-        <p class="demo-readout" id="demo-readout"></p>
-      </div>
+    <hr>
+    <h3>Models</h3>
+    <div id="card">
+      <h4>TinyGenie: MultiLangSG</h4>
+      <p>Building in progress</p>
+      <p><small>This model supports English, Chinese and Singlish. This is our first ever model.</small></p>
+      <p><small>WARNING: This model is trained to swap within English and Chinese, and use Singlish at the same time. An alternative is MultiLang.</small></p>
+      <p><small><i>This model is currently accepting Google Forms responses.</i></small></p>
     </div>
-  </section>
-
-  <!-- ===== WHAT THIS IS ===== -->
-  <section class="wrap">
-    <div class="section-head">
-      <p class="kicker">What this is</p>
-      <h2>A genie built from nothing</h2>
+    <br>
+    <div id="card">
+      <h4>TinyGenie: MultiLang</h4>
+      <p>In queue</p>
+      <p><small>This model supports English, Chinese and Malay.</small></p>
+      <p><small>WARNING: This model is trained to use only 1 language at a time, based on the input. If you prefer language swapping, try out MultiLangSG (for slangs), MultiLangSW (all languages but swaps), or MultiLangSWT (all languages + Tamil)</small></p>
+      <p><small><i>This model is currently <b>NOT</b> accepting Google Forms responses.</i></small></p>
     </div>
-    <p class="body-text">No pretrained weights, no fine-tune on someone else's foundation model. TinyGenie is a GPT-style transformer trained from byte one — its own tokenizer, its own weights, all of it built and trained from scratch on a single laptop GPU. It's currently learning English and Chinese together, plus whatever the people reading this decide to teach it.</p>
-
-    <div class="spec-strip">
-      <div class="spec"><div class="v">~25M</div><div class="k">Parameters</div></div>
-      <div class="spec"><div class="v">EN + ZH-Hans</div><div class="k">Base corpus</div></div>
-      <div class="spec"><div class="v">4GB</div><div class="k">VRAM, one laptop</div></div>
-      <div class="spec"><div class="v">Solo build</div><div class="k">No team, no funding</div></div>
+    <br>
+    <div id="card">
+      <h4>TinyGenie: MultiLangSWT</h4>
+      <p>In queue
+      <p><small>This model supports English, Chinese, Malay and Tamil.</small></p>
+      <p><small>WARNING: This model swaps within ALL its languages. For a model which does not swap languages, consider MultiLang.</small></p>
+      <p><small><i>This model is currently <b>NOT</b> accepting Google Forms responses.</i></small></p>
     </div>
-  </section>
-
-  <!-- ===== WHY YOUR TEXT MATTERS ===== -->
-  <section class="wrap">
-    <div class="section-head">
-      <p class="kicker">Why it matters</p>
-      <h2>The internet's "average" text isn't how anyone actually talks</h2>
+    <br>
+    <div id="card">
+      <h4>TinyGenie: MultiLangSW</h4>
+      <p>In queue</p>
+      <p>This model supports English, Chinese and Malay.</p>
+      <p><small>WARNING: This model does NOT swap within its languages.</small></p>
+      <p><small><i>This model is currently <b>NOT</b> accepting Google Forms responses.</i></small></p>
     </div>
-    <p class="body-text">The base training corpus comes from large web scrapes — mostly news, reference writing, and formal prose in both languages. That gets a model fluent in textbook English and textbook Chinese. It does nothing for the way real conversations actually sound.</p>
-
-    <div class="compare">
-      <div class="compare-col has">
-        <h3>Already in the corpus</h3>
-        <ul>
-          <li>News and reference writing</li>
-          <li>Formal English prose</li>
-          <li>Standard written Chinese</li>
-          <li>Textbook grammar, textbook tone</li>
-        </ul>
-      </div>
-      <div class="compare-col missing">
-        <h3>Missing entirely</h3>
-        <ul>
-          <li>Singlish</li>
-          <li>Code-switching mid-sentence</li>
-          <li>Internet slang, in either language</li>
-          <li>How people actually type to each other</li>
-        </ul>
-      </div>
-    </div>
-
-    <p class="callout">Submitted text gets folded into the corpus and <strong>oversampled 20×</strong> against everything else. A few hundred real lines from you outweighs entire scraped paragraphs of formal text.</p>
-  </section>
-
-  <!-- ===== WHAT TO SEND ===== -->
-  <section class="wrap">
-    <div class="section-head">
-      <p class="kicker">What to send</p>
-      <h2>Plain text. The messier, the better.</h2>
-    </div>
-
-    <div class="rules">
-      <div class="rule-card do">
-        <h3>DO</h3>
-        <ul>
-          <li>One phrase or sentence per line</li>
-          <li>Mix languages freely — Singlish, Mandarin, English, whatever</li>
-          <li>Write it the way you'd actually type it</li>
-          <li>A few hundred lines is already enough to be noticeable</li>
-        </ul>
-      </div>
-      <div class="rule-card dont">
-        <h3>DON'T</h3>
-        <ul>
-          <li>Copyrighted text — song lyrics, book or article excerpts</li>
-          <li>Someone else's private messages without their OK</li>
-          <li>Anything you wouldn't want a small AI repeating to a stranger</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="example-block">
-      <div class="ln"><span class="no">1</span><span class="tx">你好 I am here to 睡觉</span></div>
-      <div class="ln"><span class="no">2</span><span class="tx">walao eh today damn jialat</span></div>
-      <div class="ln"><span class="no">3</span><span class="tx">吃饱了吗 wanna go makan?</span></div>
-      <div class="ln"><span class="no">4</span><span class="tx">that test was siao difficult lah</span></div>
-      <div class="ln"><span class="no">5</span><span class="tx">他很 chill one, no need worry</span></div>
-      <div class="ln"><span class="no">6</span><span class="tx">can or not, confirm plus chop</span></div>
-      <div class="ln"><span class="no">7</span><span class="tx">今天很 shiok, weather so good</span></div>
-    </div>
-  </section>
-
-  <!-- ===== CTA ===== -->
-  <section class="cta-band" id="submit">
-    <h2>Got a few hundred lines in you?</h2>
-    <p>Drop your text into the form below. It gets merged in with everyone else's, oversampled, and trained on the next run.</p>
-    <!-- TODO: replace with your real Google Form link -->
-    <a class="cta-big" href="https://docs.google.com/forms/d/e/1FAIpQLSd0yVWl_RcFhxipP-QqCZVVhPbrMBUUb3A0nLfbvth23i6S8w/viewform?usp=publish-editor" target="_blank" rel="noopener">Submit text →</a>
-    <p class="cta-note">Takes about two minutes.</p>
-  </section>
-
+    <br>
+    <div id="card">
+      <h4>TinyGenie: MultiLangSGTM</h4>
+      <p>In queue</p>
+      <p><small>This model supports English, Chinese, Malay and Tamil.</small></p>
+      <p><small>This model does <b>NOT</b> swap within its languages. Alternatives are MultiLangSWSGTM.</small></p>
+      <p><small>This model is currently <b>NOT</b> accepting Google Forms responses.</small></p>
 </main>
 
 <footer>
