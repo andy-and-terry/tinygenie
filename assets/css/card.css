@@ -1,22 +1,20 @@
-/* 1. Global Box Reset (Ensures padding doesn't break card widths) */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* 2. The Grid Container (Handles the iPad 1-column / 2-column auto-sizing) */
 .card-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;       
-  width: 100%;     
-  padding: 20px;   
+  gap: 20px;
+  width: 100%;
+  padding: 20px;
 }
 
-/* 3. Your Card Design (Changed from #card to .card) */
 .card {
-  width: 100%;     /* Lets the grid container stretch the card automatically */
+  width: 100%;
   padding: 20px;
   background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   color: #fff;
