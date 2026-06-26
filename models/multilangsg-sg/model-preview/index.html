@@ -1,1 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TinyGenie — Teach it your tongue</title>
+<meta name="description" content="TinyGenie is a small language model trained from scratch. Help it learn how people actually talk by submitting slang, Singlish, and code-switched text.">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/main.css">
+<link rel="stylesheet" href="../assets/css/card.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="wordmark">TinyGenie<span class="dot">.</span></a>
+    <!-- TODO: replace with your real Google Form link (also appears in the CTA band below) -->
+    <a class="nav-cta" href="https://docs.google.com/forms/d/e/1FAIpQLSd0yVWl_RcFhxipP-QqCZVVhPbrMBUUb3A0nLfbvth23i6S8w/viewform?usp=publish-editor" target="_blank" rel="noopener">Submit text</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ===== HERO ===== -->
+  <section class="hero wrap" style="border-top:none;">
+    <h3>Models</h3>
+    <div class="card-container">
+    <div class="card">
+      <h4>TinyGenie: MultiLangSG</h4>
+      <p>Preview version completed, main version building in progress</p>
+      <p><small><a href="../models/multilang-sg/model-preview/">View notes</a></small></p>
+      <p><small>This model supports English, Chinese and Singlish. This is our first ever model.</small></p>
+      <p><small>WARNING: This model is trained to swap within English and Chinese, and use Singlish at the same time. An alternative is MultiLang.</small></p>
+      <p><small><i>This model is currently accepting Google Forms responses.</i></small></p>
+    </div>
+    <div class="card">
+      <h4>TinyGenie: MultiLang</h4>
+      <p>In queue</p>
+      <p><small>This model supports English, Chinese and Malay.</small></p>
+      <p><small>WARNING: This model is trained to use only 1 language at a time, based on the input. If you prefer language swapping, try out MultiLangSG (for slangs), MultiLangSW (all languages but swaps), or MultiLangSWT (all languages + Tamil)</small></p>
+      <p><small><i>This model is currently <b>NOT</b> accepting Google Forms responses.</i></small></p>
+    </div>
+    <div class="card">
+      <h4>TinyGenie: MultiLangSWT</h4>
+      <p>In queue
+      <p><small>This model supports English, Chinese, Malay and Tamil.</small></p>
+      <p><small>WARNING: This model swaps within ALL its languages. For a model which does not swap languages, consider MultiLang.</small></p>
+      <p><small><i>This model is currently <b>NOT</b> accepting Google Forms responses.</i></small></p>
+    </div>
+    <div class="card">
+      <h4>TinyGenie: MultiLangSWM</h4>
+      <p>In queue</p>
+      <p><small>This model supports English, Chinese and Malay.</small></p>
+      <p><small>WARNING: This model does NOT swap within its languages.</small></p>
+      <p><small><i>This model is currently <b>NOT</b> accepting Google Forms responses.</i></small></p>
+    </div>
+    <div class="card">
+      <h4>TinyGenie: MultiLangSGTM</h4>
+      <p>In queue</p>
+      <p><small>This model supports English, Chinese, Malay and Tamil.</small></p>
+      <p><small>This model does <b>NOT</b> swap within its languages. Alternatives are MultiLangSWSGTM.</small></p>
+      <p><small><i>This model is currently <b>NOT</b> accepting Google Forms responses.</i></small></p>
+    </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">TinyGenie — a from-scratch language model</div>
+    <div class="footer-right">MIT License | <a href="../">Mainpage</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
